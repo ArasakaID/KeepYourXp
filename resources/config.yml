@@ -1,0 +1,5 @@
+---
+#Set to false to disable
+keepPlayerXp: true
+playerRespawnMessage: "&aYour xp has been kept"
+...
