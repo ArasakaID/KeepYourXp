@@ -1,5 +1,6 @@
 ---
 #Set to false to disable
 keepPlayerXp: true
+#Send a message when player is respawning
 playerRespawnMessage: "&aYour xp has been kept"
 ...

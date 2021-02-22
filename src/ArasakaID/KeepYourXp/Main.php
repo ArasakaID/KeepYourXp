@@ -1,6 +1,6 @@
 <?php
 
-namespace KeepYourXp;
+namespace ArasakaID\KeepYourXp;
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
