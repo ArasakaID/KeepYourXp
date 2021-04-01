@@ -9,34 +9,40 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\TextFormat;
 
-class Main extends PluginBase implements Listener{
+class Main extends PluginBase implements Listener
+{
 
     private array $playerXp = [];
+    private const DROPPED_XP = "droppedXp";
+    private const REAL_XP = "realXp";
 
     public function onEnable()
     {
-        $this->saveResource("config.yml");
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->updateConfig();
     }
 
-    /**
-     * @return bool
-     */
-    private function keepXpEnable(): bool
+    private function updateConfig(): void
     {
-        if($this->getConfig()->get("keepPlayerXp")){
-            return true;
+        if (!$this->getConfig()->exists("config-version") or $this->getConfig()->get("config-version") !== 1.1) {
+            rename($this->getDataFolder() . "config.yml", $this->getDataFolder() . "config.old.yml");
+            $this->reloadConfig();
         }
-        return false;
     }
 
     /**
      * @param PlayerDeathEvent $event
      */
-    public function onPlayerDeath(PlayerDeathEvent $event){
-        $player = $event->getPlayer();
-        if($this->keepXpEnable()){
-            $this->playerXp[$player->getName()] = $event->getXpDropAmount();
+    public function onPlayerDeath(PlayerDeathEvent $event)
+    {
+        if($this->getConfig()->get("keepPlayerXp")) {
+            $player = $event->getPlayer();
+            $type = $this->getConfig()->get("typeXp");
+            if ($type === self::DROPPED_XP) {
+                $this->playerXp[$player->getName()] = $event->getXpDropAmount();
+            } elseif ($type === self::REAL_XP) {
+                $this->playerXp[$player->getName()] = $player->getXpLevel();
+            }
             $event->setXpDropAmount(0);
         }
     }
@@ -44,14 +50,18 @@ class Main extends PluginBase implements Listener{
     /**
      * @param PlayerRespawnEvent $event
      */
-    public function onPlayerRespawn(PlayerRespawnEvent $event){
-        $player = $event->getPlayer();
-        if($this->keepXpEnable()){
+    public function onPlayerRespawn(PlayerRespawnEvent $event)
+    {
+        if($this->getConfig()->get("keepPlayerXp")) {
+            $player = $event->getPlayer();
             $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
-            function(int $currentTick) use ($player) : void{
-                    if(isset($this->playerXp[$player->getName()])){
-                        $player->addXp($this->playerXp[$player->getName()]);
-                        $player->sendMessage(TextFormat::colorize($this->getConfig()->get("playerRespawnMessage")));
+                function (int $currentTick) use ($player): void {
+                    $player->getXpLevel();
+                    if (isset($this->playerXp[$player->getName()])) {
+                        if ($player->isOnline()) {
+                            $player->addXp($this->playerXp[$player->getName()]);
+                            $player->sendMessage(TextFormat::colorize($this->getConfig()->get("playerRespawnMessage")));
+                        }
                         unset($this->playerXp[$player->getName()]);
                     }
                 }

@@ -1,6 +1,15 @@
 ---
+#Do not edit this !
+config-version: 1.1
+
 #Set to false to disable
 keepPlayerXp: true
+
+#Definition:
+#Type "droppedXp" it's mean xp dropped due to this player death
+#Type "realXp" it's mean real xp player (no xp reduction)
+typeXp: "droppedXp"
+
 #Send a message when player is respawning
 playerRespawnMessage: "&aYour xp has been kept"
 ...
