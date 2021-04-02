@@ -12,7 +12,7 @@ use pocketmine\utils\TextFormat;
 class Main extends PluginBase implements Listener
 {
 
-    private array $playerXp = [];
+    private $playerXp = [];
     private const DROPPED_XP = "droppedXp";
     private const REAL_XP = "realXp";
 
