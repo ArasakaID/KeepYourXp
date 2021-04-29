@@ -41,7 +41,7 @@ class Main extends PluginBase implements Listener
             if ($type === self::DROPPED_XP) {
                 $this->playerXp[$player->getName()] = $event->getXpDropAmount();
             } elseif ($type === self::REAL_XP) {
-                $this->playerXp[$player->getName()] = $player->getXpLevel();
+                $this->playerXp[$player->getName()] = $player->getCurrentTotalXp();
             }
             $event->setXpDropAmount(0);
         }
